@@ -1,0 +1,65 @@
+server:
+  port: 8084
+spring:
+  mvc:
+    # Spring Boot 2.6+ 默认 PathPatternParser，springfox(knife4j 依赖) 未适配，
+    # 启动时会抛 documentationPluginsBootstrapper NPE 导致服务无法启动，这里回退到 AntPathMatcher
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  application:
+    name: order-service
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      server-addr: 192.168.112.130:8848
+    sentinel:
+      transport:
+        dashboard: 192.168.112.130:8090
+        port: 8719
+      datasource:
+        ds1:
+          nacos:
+            server-addr: 192.168.112.130:8848
+            data-id: order-service-sentinel
+            group-id: DEFAULT_GROUP
+            data-type: json
+            rule-type: flow
+  datasource:
+    url: jdbc:mysql://192.168.112.130:3306/nyw?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+  redis:
+    host: 192.168.112.130
+    port: 6379
+    password: 123456
+mybatis-plus:
+  configuration:
+    default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler
+  global-config:
+    db-config:
+      update-strategy: not_null
+      id-type: auto
+logging:
+  level:
+    com.nyw: debug
+  pattern:
+    dateformat: HH:mm:ss:SSS
+  file:
+    path: "logs/${spring.application.name}"
+knife4j:
+  enable: true
+  openapi:
+    title: 订单服务接口文档
+    description: "订单服务接口文档"
+    email: 19371047352@163.com
+    concat: NYW
+    url: https://github.com/nyw-source
+    version: v1.0.0
+    group:
+      default:
+        group-name: default
+        api-rule: package
+        api-rule-resources:
+          - com.nyw.order.controller

@@ -1,0 +1,73 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: gateway
+  cloud:
+    nacos:
+      server-addr: 192.168.112.130:8848
+    sentinel:
+      transport:
+        dashboard: 192.168.112.130:8090
+        port: 8719
+      scg:
+        # 被限流时的统一响应（mode 默认为空响应 200，必须显式配置；注册 BlockRequestHandler Bean 无效）
+        fallback:
+          mode: response
+          response-status: 429
+          content-type: application/json
+          response-body: '{"code":429,"msg":"请求过于频繁，请稍后再试"}'
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/users/**
+        - id: item-service
+          uri: lb://item-service
+          predicates:
+            - Path=/items/**
+        - id: search-route
+          uri: lb://item-service
+          predicates:
+            - Path=/search/**
+        - id: cart-service
+          uri: lb://cart-service
+          predicates:
+            - Path=/carts/**
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/orders/**,/pay-orders/**
+        - id: seckill-service
+          uri: lb://seckill-service
+          predicates:
+            - Path=/seckill/**
+hm:
+  jwt:
+    location: classpath:nyw.jks
+    alias: nyw
+    password: nyw123
+  auth:
+    excludePaths:
+      - /users/login
+      - /items/**
+      - /search/**
+      - /hi
+      - /doc.html
+      - /webjars/**
+      - /v2/**
+      - /v3/**
+      - /swagger-resources/**
+nyw:
+  gateway:
+    # 网关层流控阈值（GatewaySentinelConfig @Value 读取，改这里即可生效，无需改代码）
+    # 做容量/超卖压测时需要临时调大，把「限流保护」与「业务不超卖」两个结论分开验证
+    flow:
+      seckill-qps: 500
+      order-qps: 200
+logging:
+  level:
+    com.nyw: debug
+  pattern:
+    dateformat: HH:mm:ss:SSS

@@ -1,0 +1,32 @@
+# Maven / Java
+target/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# 本地工具与运行时
+.workbuddy/
+logs/
+*.log
+
+# 操作系统
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 测试截图等中间产物（保留脚本与报告）
+test/**/*.png
+test/**/*.jpg
+test/**/_shots/
+
+# 本地验证资产：含本地路径/内网 IP/凭据，不入库
+test/
+
+# 本地启动脚本运行时产物
+_startup/

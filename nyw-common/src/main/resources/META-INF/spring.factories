@@ -1,0 +1,6 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.nyw.common.config.MyBatisConfig,\
+  com.nyw.common.config.JsonConfig,\
+  com.nyw.common.config.RedisConfig,\
+  com.nyw.common.cache.CacheAutoConfiguration,\
+  com.nyw.common.config.OpenApiConfig
