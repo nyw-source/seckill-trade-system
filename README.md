@@ -25,39 +25,7 @@
 
 ## 2. 系统架构
 
-```mermaid
-graph LR
-    C[客户端] -->|HTTP| GW[gateway :8080<br/>JWT 验签 + Sentinel 限流]
-
-    GW -->|/users/**| U[user-service :8083]
-    GW -->|/items/**  /search/**| I[item-service :8081]
-    GW -->|/carts/**| CT[cart-service :8082]
-    GW -->|/orders/**  /pay-orders/**| O[order-service :8084]
-    GW -->|/seckill/**| S[seckill-service :8085]
-
-    O -.Feign.-> I
-    O -.Feign.-> CT
-    S -.Feign.-> I
-
-    U --> DB[(MySQL)]
-    I --> DB
-    CT --> DB
-    O --> DB
-    S --> DB
-
-    I --> RD[(Redis)]
-    S --> RD
-    O --> RD
-
-    S --> MQ[[RabbitMQ]]
-
-    GW -.服务发现.-> N[Nacos]
-    U -.注册.-> N
-    I -.注册.-> N
-    CT -.注册.-> N
-    O -.注册.-> N
-    S -.注册.-> N
-```
+![系统架构](docs/images/architecture.svg)
 
 ### 模块说明
 
@@ -109,19 +77,7 @@ return 0
 
 ### 3.2 超时未支付自动关单（双保险）
 
-```mermaid
-graph LR
-    A[seckill.order.exchange] -->|seckill.order.create| B[seckill.order.queue<br/>有消费者]
-    B -->|建单成功/失败| B1[createSeckillOrder]
-    B -.拒绝且不重回队列.-> DEAD[seckill.dead.queue]
-
-    D[seckill.order.delay.exchange] -->|order.delay| E[seckill.order.delay.queue<br/>⭐无消费者 · TTL 15min]
-    E -->|TTL 到期| F[seckill.order.close.exchange]
-    F -->|order.close| G[seckill.order.close.queue<br/>有消费者]
-    G --> G1[closeTimeoutOrder · CAS 幂等]
-
-    H[SeckillTimeoutScanTask<br/>每 2 分钟扫表 LIMIT 100] --> G1
-```
+![秒杀消息拓扑](docs/images/seckill-mq-topology.svg)
 
 | 通道 | 触发方式 | 定位 |
 |---|---|---|
@@ -269,6 +225,8 @@ java -jar seckill-service/target/seckill-service.jar
 
 ### 6.1 秒杀并发与零超卖
 
+![压测结果](docs/images/loadtest-result.svg)
+
 | 场景 | 并发 | 成功/总数 | 成功率 | RT 平均 / P50 / P99 |
 |---|---|---|---|---|
 | JMeter 冒烟（经网关） | 100 | 100/100 | 100% | **13 / 12 / 61 ms** |
@@ -289,6 +247,8 @@ java -jar seckill-service/target/seckill-service.jar
 > `ParamFlowException` 的计数分毫不差；这说明压的是限流器，不是业务。
 
 ### 6.2 超时关单闭环
+
+![超时关单闭环](docs/images/timeout-close-timeline.svg)
 
 TTL 到期后 **3000 笔未支付订单在约 30 秒内全部关闭（`status 1 → 3`），库存 100% 回补**：
 
@@ -319,6 +279,7 @@ seckill-trade-system/
 ├── pom.xml                  # 聚合 POM，groupId com.nyw
 ├── sql/
 │   └── seckill-tables.sql   # 秒杀表结构 + 索引 + 演示数据（可重复执行）
+├── docs/images/             # README 引用的架构图与压测结果图（静态 SVG，无需插件即可渲染）
 ├── nyw-common/              # 公共层：缓存 / 异常 / 统一返回 / 分布式 ID / Redis Key 规范
 ├── nyw-api/                 # Feign 客户端与跨服务 DTO
 ├── gateway/                 # 网关：路由 + JWT 鉴权 + Sentinel 流控

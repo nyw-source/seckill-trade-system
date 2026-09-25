@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 660" width="1060" height="660" font-family="-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif">
+  <rect x="0" y="0" width="1060" height="660" fill="#ffffff"/>
+
+  <text x="28" y="36" font-size="20" font-weight="700" fill="#1f2328">秒杀压测结果（实机数据）</text>
+  <text x="28" y="58" font-size="12" fill="#656d76">JMeter 5.6.2 / asyncio · 3000 张券 · 中间件部署在 VMware 虚拟机 · JMeter 与网关、服务同机（客户端是最大干扰源）</text>
+
+  <!-- ===== 成功率 ===== -->
+  <text x="28" y="96" font-size="13" font-weight="700" fill="#1f2328">① 请求成功率</text>
+
+  <!-- row1 -->
+  <text x="40" y="121" font-size="11" fill="#1f2328">① 冒烟 · 100 并发经网关</text>
+  <rect x="40" y="126" width="860" height="16" rx="3" fill="#0969da"/>
+  <text x="908" y="139" font-size="11" font-weight="700" fill="#0969da">100%（100/100）</text>
+
+  <!-- row2 -->
+  <text x="40" y="163" font-size="11" fill="#1f2328">② 3000 并发经网关 · 网关限流 500 QPS</text>
+  <rect x="40" y="168" width="558" height="16" rx="3" fill="#bc4c00"/>
+  <text x="606" y="181" font-size="11" font-weight="700" fill="#bc4c00">64.93%（1948/3000）　← 1052 个 HTTP 429</text>
+
+  <!-- row3 -->
+  <text x="40" y="205" font-size="11" fill="#1f2328">③ 3000 并发经网关 · 不限流</text>
+  <rect x="40" y="210" width="820" height="16" rx="3" fill="#0969da"/>
+  <text x="868" y="223" font-size="11" font-weight="700" fill="#0969da">95.37%（2861/3000）</text>
+
+  <!-- row4 -->
+  <text x="40" y="247" font-size="11" fill="#1f2328">④ 3000 并发直连 seckill-service · 剥离网关与 JMeter 开销</text>
+  <rect x="40" y="252" width="860" height="16" rx="3" fill="#1a7f37"/>
+  <text x="908" y="265" font-size="11" font-weight="700" fill="#1a7f37">100%（3000/3000）</text>
+
+  <!-- ===== 响应时间 ===== -->
+  <text x="28" y="316" font-size="13" font-weight="700" fill="#1f2328">② 响应时间（ms）</text>
+  <rect x="880" y="307" width="12" height="12" rx="2" fill="#0969da"/>
+  <text x="898" y="317" font-size="10" fill="#656d76">平均 RT</text>
+  <rect x="962" y="307" width="12" height="12" rx="2" fill="#8250df"/>
+  <text x="980" y="317" font-size="10" fill="#656d76">P99</text>
+
+  <!-- grid -->
+  <line x1="90" y1="361.2" x2="1000" y2="361.2" stroke="#eaeef2"/>
+  <line x1="90" y1="405.9" x2="1000" y2="405.9" stroke="#eaeef2"/>
+  <line x1="90" y1="450.6" x2="1000" y2="450.6" stroke="#eaeef2"/>
+  <line x1="90" y1="495.3" x2="1000" y2="495.3" stroke="#eaeef2"/>
+  <line x1="90" y1="540" x2="1000" y2="540" stroke="#d0d7de"/>
+  <text x="80" y="365" font-size="9" fill="#656d76" text-anchor="end">8000</text>
+  <text x="80" y="410" font-size="9" fill="#656d76" text-anchor="end">6000</text>
+  <text x="80" y="454" font-size="9" fill="#656d76" text-anchor="end">4000</text>
+  <text x="80" y="499" font-size="9" fill="#656d76" text-anchor="end">2000</text>
+  <text x="80" y="544" font-size="9" fill="#656d76" text-anchor="end">0</text>
+
+  <!-- group1: avg 13 / p99 61 -->
+  <rect x="150.75" y="538" width="48" height="2" rx="2" fill="#0969da"/>
+  <text x="174.75" y="532" font-size="10" font-weight="700" fill="#0969da" text-anchor="middle">13</text>
+  <rect x="208.75" y="538" width="48" height="2" rx="2" fill="#8250df"/>
+  <text x="232.75" y="532" font-size="10" font-weight="700" fill="#8250df" text-anchor="middle">61</text>
+  <text x="203.75" y="558" font-size="10" fill="#1f2328" text-anchor="middle">① 冒烟</text>
+  <text x="203.75" y="572" font-size="10" fill="#656d76" text-anchor="middle">100 并发 · 经网关</text>
+
+  <!-- group2: avg 2818 / p99 4412 -->
+  <rect x="378.25" y="477" width="48" height="63" rx="3" fill="#0969da"/>
+  <text x="402.25" y="471" font-size="10" font-weight="700" fill="#0969da" text-anchor="middle">2818</text>
+  <rect x="436.25" y="441.4" width="48" height="98.6" rx="3" fill="#8250df"/>
+  <text x="460.25" y="435" font-size="10" font-weight="700" fill="#8250df" text-anchor="middle">4412</text>
+  <text x="431.25" y="558" font-size="10" fill="#1f2328" text-anchor="middle">② 3000 并发</text>
+  <text x="431.25" y="572" font-size="10" fill="#656d76" text-anchor="middle">经网关 · 限流 500 QPS</text>
+
+  <!-- group3: avg 5150 / p99 8115 -->
+  <rect x="605.75" y="424.9" width="48" height="115.1" rx="3" fill="#0969da"/>
+  <text x="629.75" y="419" font-size="10" font-weight="700" fill="#0969da" text-anchor="middle">5150</text>
+  <rect x="663.75" y="358.6" width="48" height="181.4" rx="3" fill="#8250df"/>
+  <text x="687.75" y="352" font-size="10" font-weight="700" fill="#8250df" text-anchor="middle">8115</text>
+  <text x="658.75" y="558" font-size="10" fill="#1f2328" text-anchor="middle">③ 3000 并发</text>
+  <text x="658.75" y="572" font-size="10" fill="#656d76" text-anchor="middle">经网关 · 不限流</text>
+
+  <!-- group4: avg 2160 / p99 3326 -->
+  <rect x="833.25" y="491.7" width="48" height="48.3" rx="3" fill="#0969da"/>
+  <text x="857.25" y="485" font-size="10" font-weight="700" fill="#0969da" text-anchor="middle">2160</text>
+  <rect x="891.25" y="465.7" width="48" height="74.3" rx="3" fill="#8250df"/>
+  <text x="915.25" y="459" font-size="10" font-weight="700" fill="#8250df" text-anchor="middle">3326</text>
+  <text x="886.25" y="558" font-size="10" fill="#1f2328" text-anchor="middle">④ 3000 并发</text>
+  <text x="886.25" y="572" font-size="10" fill="#656d76" text-anchor="middle">直连 seckill-service</text>
+
+  <!-- 脚注 -->
+  <text x="28" y="612" font-size="11" fill="#656d76">① 场景 ② 的 1052 个失败全部是 HTTP 429，与 Sentinel sentinel-block.log 的 ParamFlowException 计数分毫不差 —— 压的是限流器，不是业务。</text>
+  <text x="28" y="630" font-size="11" fill="#656d76">② 场景 ③ 的 139 个失败是网关 Netty 监听 backlog（默认约 128）被瞬时 SYN 打满导致的 RST，属客户端 / OS 层面假象。</text>
+  <text x="28" y="648" font-size="11" fill="#656d76">③ 「100 并发平均 13ms / P99 61ms」与「3000 并发瞬时突发 P99 3.3s」都真实，两者测的不是同一件事，不可混用。</text>
+</svg>

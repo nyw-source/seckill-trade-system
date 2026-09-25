@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 620" width="1060" height="620" font-family="-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif">
+  <rect x="0" y="0" width="1060" height="620" fill="#ffffff"/>
+
+  <text x="28" y="36" font-size="20" font-weight="700" fill="#1f2328">超时关单闭环验证（3000 笔未支付订单）</text>
+  <text x="28" y="58" font-size="12" fill="#656d76">延迟队列 TTL 15 分钟 + 定时扫表兜底双保险 · 实测由延迟队列在 30 秒内全部关闭并 100% 回补库存</text>
+
+  <!-- ===== 时序 ===== -->
+  <text x="28" y="96" font-size="13" font-weight="700" fill="#1f2328">① TTL 到期后的库存回补时序</text>
+  <rect x="680" y="88" width="12" height="12" rx="2" fill="#0969da"/>
+  <text x="698" y="98" font-size="10" fill="#656d76">Redis 库存</text>
+  <rect x="790" y="88" width="12" height="12" rx="2" fill="#8250df"/>
+  <text x="808" y="98" font-size="10" fill="#656d76">MySQL 库存</text>
+
+  <!-- 网格 -->
+  <line x1="100" y1="130" x2="980" y2="130" stroke="#eaeef2"/>
+  <line x1="100" y1="213.3" x2="980" y2="213.3" stroke="#eaeef2"/>
+  <line x1="100" y1="296.7" x2="980" y2="296.7" stroke="#eaeef2"/>
+  <line x1="100" y1="380" x2="980" y2="380" stroke="#d0d7de"/>
+  <text x="94" y="134" font-size="9" fill="#656d76" text-anchor="end">3000</text>
+  <text x="94" y="217" font-size="9" fill="#656d76" text-anchor="end">2000</text>
+  <text x="94" y="300" font-size="9" fill="#656d76" text-anchor="end">1000</text>
+  <text x="94" y="384" font-size="9" fill="#656d76" text-anchor="end">0</text>
+
+  <!-- 库存上界 -->
+  <line x1="100" y1="130" x2="980" y2="130" stroke="#cf222e" stroke-width="1.2" stroke-dasharray="5 4" opacity="0.65"/>
+  <text x="104" y="124" font-size="9" fill="#cf222e">券初始库存上界 = 3000</text>
+
+  <!-- 折线 -->
+  <polyline points="160,359.3 540,204.3 920,130" fill="none" stroke="#0969da" stroke-width="2.5" stroke-linejoin="round"/>
+  <polyline points="160,359.1 540,204.0 920,130" fill="none" stroke="#8250df" stroke-width="2" stroke-dasharray="6 3" stroke-linejoin="round"/>
+
+  <!-- 数据点 -->
+  <circle cx="160" cy="359.3" r="4" fill="#0969da"/>
+  <circle cx="540" cy="204.3" r="4" fill="#0969da"/>
+  <circle cx="920" cy="130" r="4" fill="#0969da"/>
+  <circle cx="920" cy="130" r="7" fill="none" stroke="#1a7f37" stroke-width="2"/>
+
+  <text x="140" y="350" font-size="10" font-weight="700" fill="#0969da" text-anchor="end">248</text>
+  <text x="548" y="197" font-size="10" font-weight="700" fill="#0969da">2108</text>
+  <text x="912" y="122" font-size="10" font-weight="700" fill="#1a7f37" text-anchor="end">3000 ✔ 完成</text>
+
+  <!-- x 轴标签 -->
+  <text x="160" y="400" font-size="10" fill="#1f2328" text-anchor="middle">TTL 到期</text>
+  <text x="160" y="414" font-size="9" fill="#656d76" text-anchor="middle">21:49:34</text>
+  <text x="540" y="400" font-size="10" fill="#1f2328" text-anchor="middle">+15s</text>
+  <text x="540" y="414" font-size="9" fill="#656d76" text-anchor="middle">21:49:49</text>
+  <text x="920" y="400" font-size="10" fill="#1f2328" text-anchor="middle">+30s</text>
+  <text x="920" y="414" font-size="9" fill="#656d76" text-anchor="middle">21:50:04</text>
+
+  <text x="112" y="188" font-size="10" fill="#656d76">TTL 到期瞬间首批已回补 248 笔，</text>
+  <text x="112" y="204" font-size="10" fill="#656d76">关单队列持续消费，30 秒内补完剩余 2752 笔</text>
+
+  <!-- ===== 对账卡片 ===== -->
+  <text x="28" y="446" font-size="13" font-weight="700" fill="#1f2328">② 零超卖与幂等守恒（硬证据）</text>
+
+  <rect x="20" y="458" width="240" height="76" rx="10" fill="#f0fff4" stroke="#1a7f37"/>
+  <text x="140" y="481" font-size="11" fill="#656d76" text-anchor="middle">MySQL 订单数</text>
+  <text x="140" y="508" font-size="20" font-weight="700" fill="#1a7f37" text-anchor="middle">3000</text>
+  <text x="140" y="526" font-size="10" fill="#656d76" text-anchor="middle">= 并发数，无丢单</text>
+
+  <rect x="280" y="458" width="240" height="76" rx="10" fill="#f0fff4" stroke="#1a7f37"/>
+  <text x="400" y="481" font-size="11" fill="#656d76" text-anchor="middle">去重 userId 数</text>
+  <text x="400" y="508" font-size="20" font-weight="700" fill="#1a7f37" text-anchor="middle">3000</text>
+  <text x="400" y="526" font-size="10" fill="#656d76" text-anchor="middle">一人一单未越界</text>
+
+  <rect x="540" y="458" width="240" height="76" rx="10" fill="#f0fff4" stroke="#1a7f37"/>
+  <text x="660" y="481" font-size="11" fill="#656d76" text-anchor="middle">Redis / MySQL 剩余库存</text>
+  <text x="660" y="508" font-size="20" font-weight="700" fill="#1a7f37" text-anchor="middle">0 / 0</text>
+  <text x="660" y="526" font-size="10" fill="#656d76" text-anchor="middle">= 3000 − 3000，无超卖</text>
+
+  <rect x="800" y="458" width="240" height="76" rx="10" fill="#f0fff4" stroke="#1a7f37" stroke-width="2"/>
+  <text x="920" y="481" font-size="11" fill="#656d76" text-anchor="middle">真实关闭 / Redis 回补</text>
+  <text x="920" y="508" font-size="20" font-weight="700" fill="#1a7f37" text-anchor="middle">3011 / 3011</text>
+  <text x="920" y="526" font-size="10" fill="#656d76" text-anchor="middle">重复投递未把库存补多</text>
+
+  <!-- 脚注 -->
+  <text x="28" y="566" font-size="11" fill="#656d76">日志守恒：真实批次收到关单消息 3050 = 真实关闭 3000 + 幂等跳过 50，一条不丢（日志为 GB18030 编码，须显式解码统计）。</text>
+  <text x="28" y="584" font-size="11" fill="#656d76">幂等硬证据：累计「真实关闭 3011 == Redis 回补 3011」。若 CAS 关单不幂等，重复投递会把库存补多，这个等式立刻不成立。</text>
+  <text x="28" y="602" font-size="11" fill="#656d76">关单风暴期间 MySQL 库存短暂领先 Redis 3~4 笔（事务内 stock + 1，提交后才 INCR），属有意为之，最终收敛一致。</text>
+</svg>
