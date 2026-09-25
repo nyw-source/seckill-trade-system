@@ -1,0 +1,11 @@
+[
+  {
+    "resource": "POST:/seckill/{voucherId}",
+    "limitApp": "default",
+    "grade": 1,
+    "count": 500,
+    "strategy": 0,
+    "controlBehavior": 0,
+    "clusterMode": false
+  }
+]

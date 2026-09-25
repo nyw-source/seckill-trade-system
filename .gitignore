@@ -27,6 +27,8 @@ test/**/_shots/
 
 # 本地验证资产：含本地路径/内网 IP/凭据，不入库
 test/
+# 脱敏副本可以入库（由 test/sanitize-test.py 生成）
+!publish/test/
 
 # 本地启动脚本运行时产物
 _startup/

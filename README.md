@@ -143,16 +143,19 @@ runAfterCommit(() -> {                                   // ③ 事务提交后�
 
 ### 4.2 数据库
 
-基础表（`item` / `cart` / `user` / `order` / `order_detail` / `order_logistics` / `pay_order` / `address`）
-沿用项目原有库结构；**秒杀模块新增的两张表与索引**已整理为可重复执行的脚本：
+完整建表脚本：`sql/schema.sql`（10 张表，从实际运行库导出，含索引与注释）。
 
 ```bash
-mysql -h <host> -u root -p nyw < sql/seckill-tables.sql
+mysql -h <host> -u root -p nyw < sql/schema.sql
 ```
 
-脚本内容：`seckill_voucher`、`seckill_order` 建表，
-扫表兜底依赖的 `idx_status_create_time (status, create_time)` 联合索引（幂等补索引），
-以及一张库存 3000 的演示券（`voucher_id=1`），可直接用于压测复现。
+| 文件 | 内容 |
+|---|---|
+| `sql/schema.sql` | 全库结构：`item` / `cart` / `user` / `address` / `order` / `order_detail` / `order_logistics` / `pay_order` / `seckill_voucher` / `seckill_order` + 演示用秒杀券 |
+| `sql/seckill-tables.sql` | 只含秒杀两张表与索引，用于在既有库上增量补充（可重复执行） |
+
+> `seckill_order` 上的 `idx_status_create_time (status, create_time)` 是扫表兜底关单的**必需索引**：
+> 查询条件是 `status = 1 AND create_time < ?`，等值列在前、范围列在后，可同时吃到过滤与排序。
 
 ### 4.3 配置
 
@@ -272,14 +275,44 @@ TTL 到期后 **3000 笔未支付订单在约 30 秒内全部关闭（`status 1 
 在真实中间件 + 真实服务上跑通 **24 项端到端断言**，覆盖：
 下单 → 延迟关单 → 重复投递幂等 → 已支付订单不被误关 → 扫表兜底 → 多实例定时任务互斥 → 日志守恒。
 
+### 6.4 复现方式
+
+验证脚本与压测工具链以**脱敏副本**形式随仓库提供，见 [`publish/test/`](publish/test/)：
+
+```bash
+# 不启动服务，直打真实中间件（Redis + Lua 并发 / SQL 幂等 / MQ 拓扑），12 项断言
+python publish/test/verify-infra.py
+
+# 启动服务后的 24 项端到端断言（约 90 秒）
+python publish/test/e2e/verify-seckill-e2e.py
+
+# 压测：复位数据 → 冒烟 → 全量 3000 并发 → 验收
+python publish/test/jmeter/prepare-seckill-loadtest.py --stock 3000
+python publish/test/jmeter/run-jmeter.py --jmx seckill-3000-concurrent.jmx --tag full3000
+python publish/test/jmeter/verify-seckill-loadtest.py --jtl .../result.jtl --expect 3000 --stock 3000
+
+# 延迟关单观测 + 日志守恒校验
+python publish/test/jmeter/watch-delayed-close.py --minutes 20
+python publish/test/jmeter/analyze-seckill-log.py
+```
+
+> 脚本中的主机、密码、本机工具路径已替换为 `${MW_HOST}` / `${MW_PASSWORD}` 等占位符，运行前需自行替换。
+> `jmeter/data/seckill-users.csv`（3000 个真实 JWT）**未随仓库提供**，可用 `jmeter/tools/TokenGen.java` 现场生成。
+> 细节与完整清单见 [`publish/test/README.md`](publish/test/README.md)。
+
+> ⚠️ 日志文件是 **GB18030** 编码。Git-Bash 的 `grep` / `rg` 在 `LANG=C.UTF-8` 下匹配不到任何中文且**静默返回 0**，
+> 会得出「关单从未发生」这类错误结论 —— 中文统计一律走 `analyze-seckill-log.py`。
+
 ## 7. 目录结构
 
 ```
 seckill-trade-system/
 ├── pom.xml                  # 聚合 POM，groupId com.nyw
 ├── sql/
-│   └── seckill-tables.sql   # 秒杀表结构 + 索引 + 演示数据（可重复执行）
+│   ├── schema.sql           # 全库结构（10 张表，从实际运行库导出）
+│   └── seckill-tables.sql   # 秒杀两张表增量脚本（可重复执行）
 ├── docs/images/             # README 引用的架构图与压测结果图（静态 SVG，无需插件即可渲染）
+├── publish/test/            # 验证脚本与报告的脱敏副本（可直接复现压测）
 ├── nyw-common/              # 公共层：缓存 / 异常 / 统一返回 / 分布式 ID / Redis Key 规范
 ├── nyw-api/                 # Feign 客户端与跨服务 DTO
 ├── gateway/                 # 网关：路由 + JWT 鉴权 + Sentinel 流控

@@ -1,0 +1,17 @@
+# ============================================
+# Redis 压测前数据初始化
+# 使用方式：redis-cli -h ${MW_HOST} -p 6379 < init-seckill-redis.txt
+# 或在 redis-cli 中逐条执行
+# ============================================
+
+# 1. 清理旧数据
+DEL nyw:seckill:stock:1
+DEL nyw:seckill:order:set:1
+DEL nyw:id:seckill:order
+
+# 2. 初始化秒杀库存（3000）
+SET nyw:seckill:stock:1 3000
+
+# 3. 验证
+GET nyw:seckill:stock:1
+SCARD nyw:seckill:order:set:1
